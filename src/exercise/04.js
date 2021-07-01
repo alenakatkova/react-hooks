@@ -5,22 +5,16 @@ import * as React from 'react'
 
 function Board() {
   const [squares, setSquares] = React.useState(Array(9).fill(null))
-  const [nextValue, setNextValue] = React.useState('X')
-  const [winner, setWinner] = React.useState(null)
-  const [status, setStatus] = React.useState(`Next player: ${nextValue}`)
+  const nextValue = calculateNextValue(squares)
+  const winner = calculateWinner(squares)
+  const status = calculateStatus(winner, squares, nextValue)
 
   function selectSquare(square) {
-    if (winner !== null || squares[square] !== null) return
+    if (winner || squares[square]) return
     const squaresCopy = [...squares]
     squaresCopy[square] = nextValue
     setSquares(squaresCopy)
   }
-
-  React.useEffect(() => {
-    setWinner(calculateWinner(squares))
-    setNextValue(calculateNextValue(squares))
-    setStatus(calculateStatus(winner, squares, nextValue))
-  }, [winner, squares, nextValue])
 
   function restart() {
     setSquares(Array(9).fill(null))
