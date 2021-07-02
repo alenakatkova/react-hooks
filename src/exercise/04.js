@@ -35,23 +35,26 @@ function Board({onSquareClick, squares}) {
 }
 
 function Game() {
-  const [history, setHistory] = useLocalStorageState('history', [Array(9).fill(null)])
-  const [currentStep, setCurrentStep] = useLocalStorageState('currentStep', 0)
+  const [history, setHistory] = useLocalStorageState(
+    'history',
+    [Array(9).fill(null)]
+  )
+  const [currentStep, setCurrentStep] = useLocalStorageState(
+    'currentStep',
+    0
+  )
   const nextValue = calculateNextValue(history[currentStep])
   const winner = calculateWinner(history[currentStep])
   const status = calculateStatus(winner, history[currentStep], nextValue)
 
   function selectSquare(square) {
     if (winner || history[currentStep][square]) return
+
     const squaresCopy = [...history[currentStep]]
     squaresCopy[square] = nextValue
-    if (currentStep + 1 !== history.length) {
-      const newHistory = history.slice(0, currentStep + 1)
-      setHistory([...newHistory, squaresCopy])
-      setCurrentStep(currentStep + 1)
-    } else {
-      setHistory([...history, squaresCopy])
-    }
+    const newHistory = history.slice(0, currentStep + 1)
+
+    setHistory([...newHistory, squaresCopy])
     setCurrentStep(currentStep + 1)
   }
 
@@ -66,17 +69,17 @@ function Game() {
   }
 
   const moves = history.map((item, index) => {
-    const indicator = index === currentStep ? '(current)' : ''
+    const isCurrentStep = index === currentStep
     const stepText = index !== 0
       ? `Go to move #${index}`
       : `Go to game start`
     return (
-      <li key={JSON.stringify(item)}>
+      <li key={index}>
         <button
           onClick={() => selectStep(index)}
-          disabled={index === currentStep}
+          disabled={isCurrentStep}
         >
-          {stepText} {indicator}
+          {stepText} {isCurrentStep ? '(current)' : null}
         </button>
       </li>
     )
