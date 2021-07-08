@@ -9,9 +9,9 @@ function ErrorFallback({error, resetErrorBoundary}) {
   return (
     <div>
       <h2>Something went wrong</h2>
-      <div style={{ whiteSpace: 'pre-wrap' }}>
+      <pre style={{ whiteSpace: 'pre-wrap' }}>
         {error.message}
-      </div>
+      </pre>
       <button onClick={resetErrorBoundary}>Try again</button>
     </div>
   )
@@ -19,7 +19,7 @@ function ErrorFallback({error, resetErrorBoundary}) {
 
 function PokemonInfo({pokemonName}) {
   const [state, setState] = React.useState({
-    status: 'idle'
+    status: pokemonName ? 'pending' : 'idle'
   })
 
   React.useEffect(() => {
@@ -61,6 +61,7 @@ function App() {
         <ErrorBoundary
           FallbackComponent={ErrorFallback}
           onReset={() => {setPokemonName('')}}
+          resetKeys={[pokemonName]}
         >
           <PokemonInfo pokemonName={pokemonName} />
         </ErrorBoundary>
