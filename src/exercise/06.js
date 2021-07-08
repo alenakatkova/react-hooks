@@ -20,19 +20,23 @@ class ErrorBoundary extends React.Component {
 
   render() {
     if (this.state.errorInfo) {
-      return (
-        <div>
-          <h2>Something went wrong</h2>
-          <details>
-            {this.state.error && this.state.error.toString()}
-            <br />
-            {this.state.errorInfo.componentStack}
-          </details>
-        </div>
-      )
+      return this.props.FallbackComponent(this.state.error, this.state.errorInfo)
     }
     return this.props.children
   }
+}
+
+function ErrorFallback(error, errorInfo) {
+  return (
+    <div>
+      <h2>Something went wrong</h2>
+      <details style={{ whiteSpace: 'pre-wrap' }}>
+        {error && error.toString()}
+        <br />
+        {errorInfo.componentStack}
+      </details>
+    </div>
+  )
 }
 
 function PokemonInfo({pokemonName}) {
@@ -53,7 +57,9 @@ function PokemonInfo({pokemonName}) {
       })
   }, [pokemonName])
 
-  if (state.status === 'idle') {
+  if (state.status === 'rejected') {
+    throw state.error
+  } else if (state.status === 'idle') {
     return <div>Submit a pokemon name</div>
   } else if (state.status === 'pending') {
     return <PokemonInfoFallback name={pokemonName} />
@@ -74,7 +80,7 @@ function App() {
       <PokemonForm pokemonName={pokemonName} onSubmit={handleSubmit} />
       <hr />
       <div className="pokemon-info">
-        <ErrorBoundary>
+        <ErrorBoundary FallbackComponent={ErrorFallback}>
           <PokemonInfo pokemonName={pokemonName} />
         </ErrorBoundary>
       </div>
